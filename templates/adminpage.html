@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="fw-bold mb-4">Partner Requests</h2>
+
+  {% if partner_requests %}
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in partner_requests %}
+        <tr data-id="{{ request.id }}">
+          <th scope="row">{{ loop.index }}</th>
+          <td>{{ request.name }}</td>
+          <td>{{ request.email }}</td>
+          <td>{{ request.phone }}</td>
+          <td>{{ request.message }}</td>
+          <td>
+            {% if request.status == 'pending' %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% else %}
+              <span class="badge bg-success">Approved</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if request.status == 'pending' %}
+              <button class="btn btn-sm btn-success approve-partner me-1"
+                      data-id="{{ request.id }}">
+                <i class="bi bi-check2-circle"></i> Approve
+              </button>
+              <button class="btn btn-sm btn-secondary delete-request"
+                      data-id="{{ request.id }}">
+                <i class="bi bi-x-circle"></i> Remove Request
+              </button>
+            {% elif request.status == 'approved' %}
+              <button class="btn btn-sm btn-outline-danger delete-partner me-1"
+                      data-id="{{ request.id }}">
+                <i class="bi bi-trash"></i> Delete Partner
+              </button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="text-center py-5">
+      <h5>No partner requests found.</h5>
+    </div>
+  {% endif %}
+</div>
+
+
+<!-- JS Actions -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+// Approve Partner
+document.querySelectorAll('.approve-partner').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const requestId = btn.dataset.id;
+    if (!confirm('Approve this partner request and send login credentials?')) return;
+
+    fetch(`/admin/handle-request/${requestId}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const row = document.querySelector(`tr[data-id="${requestId}"]`);
+          const badge = row.querySelector('.badge');
+          badge.className = 'badge bg-success';
+          badge.textContent = 'Approved';
+          btn.remove();
+
+          // Add Delete Partner button with correct partner_id
+          const td = row.querySelector('td.text-center');
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'btn btn-sm btn-outline-danger delete-partner me-1';
+          deleteBtn.dataset.id = data.partner_id;
+          deleteBtn.innerHTML = '<i class="bi bi-trash"></i> Delete Partner';
+          td.prepend(deleteBtn);
+
+          attachDeletePartnerEvent(deleteBtn);
+          alert('✅ Partner approved and credentials emailed.');
+        } else {
+          alert('⚠️ Error approving partner.');
+        }
+      }).catch(err => alert('⚠️ Network error: ' + err));
+  });
+});
+
+// Delete Partner helper
+function attachDeletePartnerEvent(btn) {
+  btn.addEventListener('click', () => {
+    const partnerId = btn.dataset.id;
+    if (!confirm('⚠️ This will remove the partner account, all their products, and any cart items. Proceed?')) return;
+
+    fetch(`/admin/partner/${partnerId}/delete`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          document.querySelector(`tr[data-id="${partnerId}"]`).remove();
+          alert('🗑️ Partner and all related data removed.');
+        } else {
+          alert('⚠️ Error deleting partner: ' + data.error);
+        }
+      }).catch(err => alert('⚠️ Network error: ' + err));
+  });
+}
+
+// Attach Delete Partner events to existing buttons
+document.querySelectorAll('.delete-partner').forEach(attachDeletePartnerEvent);
+
+// Delete Request
+document.querySelectorAll('.delete-request').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const requestId = btn.dataset.id;
+    if (!confirm('Delete this request only?')) return;
+
+    fetch(`/admin/delete-request/${requestId}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          document.querySelector(`tr[data-id="${requestId}"]`).remove();
+        } else alert('⚠️ Error deleting request.');
+      }).catch(err => alert('⚠️ Network error: ' + err));
+  });
+});
+
+});
+</script>
+{% endblock %}

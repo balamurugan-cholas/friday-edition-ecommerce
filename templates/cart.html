@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5" id="cart-container">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('shop.home') }}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Cart</li>
+    </ol>
+  </nav>
+
+  <h2 class="fw-bold mb-4 text-center text-md-start">Your Cart</h2>
+
+  {% if cart_items %}
+  <div class="row">
+    <!-- Cart Items -->
+    <div class="col-lg-8">
+      <!-- Desktop Table -->
+      <div class="table-responsive d-none d-lg-block">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Total</th>
+              <th scope="col">Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+            <tr data-id="{{ item.id }}">
+              <td class="d-flex align-items-center gap-3">
+                <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" class="img-thumbnail" style="width:60px;">
+                <div>
+                  <h6 class="mb-0">{{ item.name }}</h6>
+                  <small class="text-muted">{{ item.shop_name }}</small>
+                </div>
+              </td>
+              <td>${{ item.price }}</td>
+              <td>
+                <div class="input-group" style="width:110px;">
+                  <button class="btn btn-outline-secondary btn-sm decrease" data-id="{{ item.id }}">-</button>
+                  <input type="text" class="form-control text-center quantity" value="{{ item.quantity }}" data-id="{{ item.id }}">
+                  <button class="btn btn-outline-secondary btn-sm increase" data-id="{{ item.id }}">+</button>
+                </div>
+              </td>
+              <td class="item-total">${{ item.price * item.quantity }}</td>
+              <td>
+                <button class="btn btn-outline-danger btn-sm remove-item" data-id="{{ item.id }}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="d-lg-none">
+        {% for item in cart_items %}
+        <div class="card mb-3" data-id="{{ item.id }}">
+          <div class="row g-0 align-items-center">
+            <div class="col-4">
+              <img src="{{ url_for('static', filename='images/' + item.image) }}" class="img-fluid rounded-start" alt="{{ item.name }}">
+            </div>
+            <div class="col-8">
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">{{ item.name }}</h6>
+                <small class="text-muted">{{ item.shop_name }}</small>
+                <p class="mb-1">Price: ${{ item.price }}</p>
+                <div class="d-flex align-items-center mb-1">
+                  <button class="btn btn-outline-secondary btn-sm decrease me-2" data-id="{{ item.id }}">-</button>
+                  <input type="text" class="form-control text-center quantity me-2" value="{{ item.quantity }}" data-id="{{ item.id }}" style="width:50px;">
+                  <button class="btn btn-outline-secondary btn-sm increase" data-id="{{ item.id }}">+</button>
+                </div>
+                <p class="mb-1 item-total">Total: ${{ item.price * item.quantity }}</p>
+                <button class="btn btn-outline-danger btn-sm remove-item" data-id="{{ item.id }}">
+                  <i class="bi bi-trash"></i> Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="col-lg-4">
+      <div class="card p-3 shadow-sm">
+        <h5 class="fw-bold mb-3">Cart Summary</h5>
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Subtotal</span>
+            <span id="cart-subtotal">${{ subtotal }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Shipping</span>
+            <span id="cart-shipping">${{ shipping }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between fw-bold">
+            <span>Total</span>
+            <span id="cart-total">${{ subtotal + shipping }}</span>
+          </li>
+        </ul>
+        <button id="clearCartBtn" class="btn btn-danger w-100 mb-2">Clear Cart</button>
+        <a href="#" class="btn btn-warning w-100">Proceed to Checkout</a>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <h5>Your cart is empty.</h5>
+    <a href="{{ url_for('shop.home') }}" class="btn btn-dark mt-3">Continue Shopping</a>
+  </div>
+  {% endif %}
+
+  <!-- All Products Section -->
+  <div class="mt-5">
+    <h3 class="fw-bold mb-4">All Products</h3>
+    <div class="row g-4">
+      {% for product in all_products %}
+      <div class="col-6 col-md-3">
+        <div class="card product-card text-center h-100">
+          <img src="{{ url_for('static', filename='images/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
+          <div class="card-body d-flex flex-column">
+            <h6 class="card-title flex-grow-1">{{ product.name }}</h6>
+            <p class="card-text mb-2">${{ product.price }}</p>
+            <a style="color: black;" href="{{ url_for('shop.product_page', product_id=product.id) }}" class="btn btn-sm btn-outline-warning btn-warning mt-auto">View</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cartBadge = document.querySelector('.bi-cart3').closest('a').querySelector('.badge');
+  const subtotalEl = document.getElementById('cart-subtotal');
+  const totalEl = document.getElementById('cart-total');
+  const shipping = parseFloat(document.getElementById('cart-shipping').textContent.replace('$',''));
+  const cartContainer = document.getElementById('cart-container');
+
+  function updateCartBadge(count){
+    cartBadge.textContent = count;
+  }
+
+  function updateCart(productId, quantity){
+  fetch(`/update-cart/${productId}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({quantity})
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.success){
+      updateCartBadge(data.cart_quantity);
+      document.querySelectorAll(`[data-id='${productId}'] .item-total`).forEach(el => {
+        el.textContent = `$${data.item_total.toFixed(2)}`;
+      });
+      subtotalEl.textContent = `$${data.subtotal.toFixed(2)}`;
+      totalEl.textContent = `$${(data.subtotal + shipping).toFixed(2)}`;
+
+        // Remove item if quantity = 0
+        if(data.item_total === 0){
+          document.querySelectorAll(`[data-id='${productId}']`).forEach(el => el.remove());
+        }
+
+        // Check if cart is empty
+        const remainingItems = document.querySelectorAll('.table-responsive tbody tr, .d-lg-none .card');
+        if(remainingItems.length === 0){
+          cartContainer.innerHTML = `
+            <div class="text-center py-5">
+              <h5>Your cart is empty.</h5>
+              <a href="{{ url_for('shop.home') }}" class="btn btn-dark mt-3">Continue Shopping</a>
+            </div>
+          `;
+        }
+      }
+    });
+  }
+
+  function removeFromCart(productId){
+    fetch(`/remove-from-cart/${productId}`, { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      if(data.success){
+        updateCartBadge(data.cart_quantity);
+        document.querySelectorAll(`[data-id='${productId}']`).forEach(el => el.remove());
+        subtotalEl.textContent = `$${data.subtotal}`;
+        totalEl.textContent = `$${data.subtotal + shipping}`;
+
+        // Check if cart is empty
+        const remainingItems = document.querySelectorAll('.table-responsive tbody tr, .d-lg-none .card');
+        if(remainingItems.length === 0){
+          cartContainer.innerHTML = `
+            <div class="text-center py-5">
+              <h5>Your cart is empty.</h5>
+              <a href="{{ url_for('shop.home') }}" class="btn btn-dark mt-3">Continue Shopping</a>
+            </div>
+          `;
+        }
+      }
+    });
+  }
+
+  // ---------- Clear Cart ----------
+  document.getElementById('clearCartBtn')?.addEventListener('click', () => {
+    fetch('/clear-cart', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      if(data.status === 'success'){
+        updateCartBadge(0);
+        cartContainer.innerHTML = `
+          <div class="text-center py-5">
+            <h5>Your cart is empty.</h5>
+            <a href="{{ url_for('shop.home') }}" class="btn btn-dark mt-3">Continue Shopping</a>
+          </div>
+        `;
+      }
+    });
+  });
+
+  // ---------- Event Delegation ----------
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const productId = btn.dataset.id;
+
+    if(btn.classList.contains('increase')){
+      const input = document.querySelector(`.quantity[data-id='${productId}']`);
+      input.value = parseInt(input.value) + 1;
+      updateCart(productId, parseInt(input.value));
+    }
+
+    if(btn.classList.contains('decrease')){
+      const input = document.querySelector(`.quantity[data-id='${productId}']`);
+      if(parseInt(input.value) > 1){
+        input.value = parseInt(input.value) - 1;
+        updateCart(productId, parseInt(input.value));
+      }
+    }
+
+    if(btn.classList.contains('remove-item')){
+      removeFromCart(productId);
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if(e.target.classList.contains('quantity')){
+      let val = parseInt(e.target.value);
+      if(val < 1) val = 1;
+      e.target.value = val;
+      updateCart(e.target.dataset.id, val);
+    }
+  });
+});
+</script>
+{% endblock %}

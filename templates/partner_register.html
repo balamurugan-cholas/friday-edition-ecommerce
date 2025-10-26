@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="fw-bold mb-4">Partner Registration</h2>
+  <p>Fill the form below to request a partnership. We will verify and get back to you.</p>
+
+  <form method="POST" action="{{ url_for('shop.partner_register') }}" class="mt-4">
+    <div class="mb-3">
+      <label for="shop_name" class="form-label">Shop Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" id="shop_name" name="shop_name" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="owner_name" class="form-label">Owner Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" id="owner_name" name="owner_name" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" id="phone" name="phone" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email">
+      <div class="form-text">We will send your login credentials here after approval.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Request</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,682 @@
+/* ====== Base Theme ====== */
+body {
+  background: #fff;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ====== Brand ====== */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-decoration: none;
+}
+.brand span:first-child {
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #000;
+  letter-spacing: 0.5px;
+}
+.brand span:last-child {
+  margin-top: -2px;
+  font-weight: 500;
+  color: #555;
+  font-size: 1rem;
+}
+
+/* ====== Navbar ====== */
+.navbar-area {
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.navbar-area .nav-link {
+  color: #222;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+.navbar-area .nav-link:hover {
+  color: #000;
+  text-decoration: none;
+}
+
+/* ====== Search ====== */
+.search-bar input {
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+.search-bar input:focus {
+  background: #fff;
+  border-color: #999;
+  box-shadow: none;
+}
+
+/* ====== Mega Dropdown Centered Below Search ====== */
+.dropdown-menu.mega {
+  position: absolute; /* absolute relative to body */
+  top: 70px;          /* distance below search bar */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 900px;
+  text-align: center;
+  padding: 1rem;
+  display: none;
+  border: 1px solid #ddd;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background: #fff;
+  z-index: 1050;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+}
+
+.dropdown-menu.mega.show {
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.dropdown-menu.mega .dropdown-item {
+  flex: 0 0 calc(16.66% - 1rem); /* 6 items per row */
+  margin: 0.25rem 0;
+  padding: 0.35rem 0.5rem;
+  font-weight: 500;
+  color: #222;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.dropdown-menu.mega .dropdown-item:hover {
+  background: #f7f7f7;
+  color: #000;
+}
+
+/* ====== Dropdown Close Button ====== */
+.dropdown-menu.mega .close-dropdown {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #555;
+  z-index: 1100;
+}
+.dropdown-menu.mega .close-dropdown:hover {
+  color: #000;
+}
+
+/* ====== Cart Icon & Badge ====== */
+.bi-cart3 {
+  font-size: 1.4rem;
+  color: #222;
+  transition: color 0.3s ease;
+  position: relative;
+}
+.bi-cart3:hover {
+  color: #000;
+}
+.navbar-area .nav-item .bi-cart3 + .badge {
+  position: absolute;
+  top: 0.15rem; /* adjust as needed */
+  right: 0.15rem;
+  transform: none;
+  font-size: 0.65rem;
+}
+
+.footer {
+  background: linear-gradient(135deg, #007BFF, #FF6600);
+}
+.footer a:hover {
+  text-decoration: underline;
+  color: #fff !important;
+}
+.email-input {
+  padding-left: -50px;
+}
+
+.foot-btn {
+  margin-right: -80px;
+}
+
+@media (max-width: 767px) {
+  /* Quick Links & Support side by side */
+  .footer .row > .col-md-3:nth-child(2),
+  .footer .row > .col-md-3:nth-child(3) {
+    flex: 0 0 50%;
+    max-width: 50%;
+    text-align: center;
+  }
+
+  .email-input {
+    margin-left: 0px;
+  }
+
+  .foot-btn {
+    margin-right: 0px;
+  }
+
+  .footer .row > div {
+    margin-bottom: 1.5rem;
+  }
+
+  .footer form.d-flex {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* ====== Mobile Overlay ====== */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  transition: all 0.35s ease;
+  z-index: 1050;
+}
+.mobile-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.overlay-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.mobile-overlay a {
+  display: block;
+  padding: 0.75rem 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.mobile-overlay a:hover {
+  color: #f0f0f0;
+}
+
+.mobile-overlay .close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  color: #fff;
+  font-size: 1.8rem;
+  z-index: 1055;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 991.98px) {
+  .search-bar { display: none !important; }
+
+  .dropdown-menu.mega {
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .dropdown-menu.mega .dropdown-item {
+    flex: 0 0 48%;
+    margin: 0.25rem 0;
+  }
+
+  /* Mobile Cart Badge */
+  .d-lg-none .bi-cart3 {
+    font-size: 1.3rem;
+    position: relative;
+  }
+  .d-lg-none .bi-cart3 + .badge {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+    transform: none;
+    font-size: 0.6rem;
+  }
+}
+
+/* Toast slide-in animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast.slide-in {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+
+
+/* ===== Hero Section ===== */
+.hero-section {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Mobile Search ===== */
+.mobile-search {
+  position: relative;
+}
+.mobile-search input {
+  width: 100%;
+  padding-right: 40px;
+  border-radius: 50px;
+}
+.mobile-search .search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+/* ===== Mobile Dropdown Links ===== */
+.d-lg-none .dropdown button {
+  min-width: 120px;
+}
+.d-lg-none .dropdown-menu {
+  min-width: 140px;
+}
+.d-lg-none .dropdown-menu a {
+  text-align: center;
+}
+
+/* ===== Carousel ===== */
+.hero-left {
+  height: 400px; /* Adjust as needed */
+  overflow: hidden;
+}
+.hero-left .carousel-inner,
+.hero-left .carousel-item {
+  height: 100%;
+}
+.hero-left img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s ease;
+}
+
+/* ===== Carousel controls ===== */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5%;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-size: 100%, 100%;
+}
+
+/* ===== Hero Overlay (Desktop) ===== */
+.hero-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.hero-title {
+  font-size: 2rem;
+}
+.hero-subtext {
+  font-size: 1.1rem;
+}
+.hero-buttons .btn {
+  font-size: 0.95rem;
+  padding: 0.5rem 1.5rem;
+}
+
+/* ===== Product Cards Desktop ===== */
+.hero-right .product-card {
+  height: 180px; /* Fixed height for uniform cards */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hero-right .product-card img {
+  max-height: 100px;
+  object-fit: contain;
+}
+
+/* ===== Product Cards Mobile (Horizontal Scroll) ===== */
+.product-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 5px;
+}
+.product-scroll .product-card {
+  min-width: 140px;
+  max-width: 160px;
+  flex: 0 0 auto;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.product-scroll .product-card img {
+  max-height: 90px;
+  object-fit: contain;
+}
+
+/* ===== General Card Buttons ===== */
+.product-card .btn {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+}
+
+/* ===== Responsive Hero Section ===== */
+@media (max-width: 992px) {
+  .hero-left {
+    height: 300px;
+  }
+  .hero-overlay {
+    display: none;
+  }
+  .hero-right {
+    display: none !important;
+  }
+}
+
+/* ===== Smooth slide animation for carousel ===== */
+.carousel.slide .carousel-item {
+  transition: transform 0.6s ease-in-out;
+}
+
+/* ===== Remove default Bootstrap carousel fade ===== */
+.carousel-fade .carousel-item {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* ===== Optional: Hide scrollbar on mobile horizontal scroll ===== */
+.product-scroll::-webkit-scrollbar {
+  display: none;
+}
+.product-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+/* ===== All Products Section ===== */
+.all-products-section {
+  background-color: #f9f9f9; /* light neutral background */
+  color: #333;
+}
+
+.all-products-section .section-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.all-products-section .section-header p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.all-products-section .product-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.all-products-section .product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.all-products-section .product-card img {
+  object-fit: cover;
+  height: 200px; /* fixed image height */
+  width: 100%;
+}
+
+.all-products-section .product-card .card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.all-products-section .product-card .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+.all-products-section .product-card .card-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.all-products-section .product-card .btn {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .all-products-section .product-card img {
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .all-products-section .product-card img {
+    height: 160px;
+  }
+  .all-products-section .product-card .card-title {
+    font-size: 0.95rem;
+  }
+  .all-products-section .product-card .card-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .all-products-section .product-card img {
+    height: 150px;
+  }
+  .all-products-section .product-card .card-title {
+    font-size: 0.9rem;
+  }
+  .all-products-section .product-card .card-text {
+    font-size: 0.8rem;
+  }
+}
+
+
+/* ===================== Product Page ===================== */
+.product-page {
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+/* Product Image */
+.product-image img {
+  border-radius: 8px;
+  object-fit: cover;
+  max-height: 500px;
+  width: 100%;
+}
+
+/* Product Info */
+.product-page h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ✅ Bolder price & description */
+.product-page .product-price {
+  font-weight: 600;
+  color: #444;
+  font-size: 1.2rem;
+}
+.product-page .product-description {
+  font-size: 1rem;
+  color: #555;
+  font-weight: 500;
+}
+
+/* ====== Form Width ====== */
+.product-page form.product-form {
+  width: 70%;
+  max-width: 420px;
+  text-align: left !important;
+}
+
+/* Always left-align Quantity & Size rows */
+.product-page form.product-form .align-left {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  text-align: left !important;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+/* Label styling */
+.product-page form.product-form .align-left label {
+  min-width: 80px;
+  margin-bottom: 0;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* ================= Buttons ================= */
+.product-page .btn-warning,
+.product-page .btn-success {
+  font-weight: 600;
+  border-radius: 6px;
+  transition: none;
+}
+
+.product-page .btn-warning:hover,
+.product-page .btn-success:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ================= Custom Inputs & Dropdown ================= */
+.product-page .custom-input,
+.product-page .custom-select {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  background-color: #fafafa;
+  transition: all 0.2s ease;
+  max-width: 100%;   /* ✅ prevent overflow in all cases */
+  width: 100%;       /* ✅ force full width on small screens */
+  box-sizing: border-box;
+}
+
+/* Remove native select arrow and add custom */
+.product-page .custom-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/ %3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+}
+
+.product-page .custom-input:focus,
+.product-page .custom-select:focus {
+  border-color: #ff9800;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255,152,0,0.2);
+  outline: none;
+}
+
+/* ================= Related / Store Products ================= */
+.related-products h4,
+.store-products h4 {
+  font-weight: 600;
+}
+
+.product-card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.product-card img {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  height: 140px;
+  object-fit: cover;
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 991px) {
+  .product-image img { max-height: 350px; }
+}
+
+@media (max-width: 575px) {
+  /* Full width form */
+  .product-page form.product-form {
+    width: 100% !important;
+    max-width: none;
+  }
+
+  /* Inputs and dropdowns full width, never overflow */
+  .product-page .custom-input,
+  .product-page .custom-select {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;  /* ✅ absolutely prevent overflow */
+  }
+
+  /* Stack buttons vertically full width */
+  .product-page form.product-form .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .product-page .btn-warning,
+  .product-page .btn-success {
+    width: 100% !important;
+  }
+}

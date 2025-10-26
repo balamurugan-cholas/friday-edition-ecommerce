@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Friday Edition</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3 d-flex flex-column-reverse" style="z-index: 1080;"></div>
+
+<header class="navbar-area">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center justify-content-between py-2">
+
+      <!-- Brand -->
+      <a href="{{ url_for('shop.home') }}" class="brand text-decoration-none">
+        <span class="fw-bold text-dark fs-4">Friday</span>
+        <span style="margin-top: -10px;" class="fw-semibold text-secondary fs-6">Edition</span>
+      </a>
+
+      <!-- Search (desktop only) -->
+      <form id="searchForm" class="search-bar position-relative d-none d-lg-block ms-4 flex-grow-1 mx-4"
+            action="{{ url_for('shop.search') }}" method="get">
+        <input id="searchInput" class="form-control rounded-pill ps-4 pe-5" type="search"
+               name="q" placeholder="Search products..." aria-label="Search" autocomplete="off">
+        <button class="btn position-absolute end-0 top-0 mt-1 me-2 text-muted border-0 bg-transparent" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+        <!-- Suggestions dropdown -->
+        <div class="dropdown-menu w-100 mt-1 p-2 shadow-sm" id="search-suggestions" style="max-height:250px; overflow-y:auto;"></div>
+      </form>
+
+      <!-- Desktop Nav -->
+      <nav class="d-none d-lg-flex align-items-center ms-auto">
+        <ul class="navbar-nav flex-row gap-3">
+
+          <!-- Products dropdown -->
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="productDropdown">Products
+              <i class="bi bi-caret-down-fill ms-1 fs-8 text-dark"></i>
+            </a>
+            <div class="dropdown-menu mega text-center p-3" id="productMenu">
+              <span class="close-dropdown" id="closeProduct">&times;</span>
+              <div class="d-flex flex-wrap justify-content-center gap-2">
+                {% set categories = ['electronics', 'dress', 'mobile', 'sports', 'beauty', 'toys'] %}
+                {% for category in categories %}
+                  <a class="dropdown-item"
+                     href="{{ url_for('shop.category_page', category_name=category) }}">
+                    {{ category.title() if category != 'dress' else 'Fashion' }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </li>
+
+          <!-- Shop dropdown -->
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="shopDropdown">Shop
+              <i class="bi bi-caret-down-fill ms-1 fs-8 text-dark"></i>
+            </a>
+            <div class="dropdown-menu mega text-center p-3" id="shopMenu">
+              <span class="close-dropdown" id="closeShop">&times;</span>
+              <div class="d-flex flex-wrap justify-content-center gap-2">
+                {% for shop in all_shops %}
+                  <a class="dropdown-item"
+                     href="{{ url_for('shop.shop_page', shop_name=shop) }}">{{ shop }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          </li>
+
+          <!-- Cart icon -->
+          <li class="nav-item position-relative">
+            <a class="nav-link" href="{{ url_for('shop.view_cart') }}">
+              <i class="bi bi-cart3 fs-5"></i>
+              {% set cart_quantity = session.get('cart', []) | sum(attribute='quantity') %}
+              <span style="margin-top: 4px;" class="badge rounded-pill bg-danger">{{ cart_quantity }}</span>
+            </a>
+          </li>
+
+          <!-- Dynamic Button -->
+          <li class="nav-item">
+            {% if session.get('partner_id') %}
+              <a href="{{ url_for('shop.partner_dashboard') }}" class="btn btn-dark btn-sm">Dashboard</a>
+            {% elif session.get('partner_logged_out') %}
+              <a href="{{ url_for('shop.partner_login') }}" class="btn btn-dark btn-sm">Login</a>
+            {% elif session.get('logged_in') %}
+              <a href="{{ url_for('shop.partner_register') }}" class="btn btn-dark btn-sm">Become Partner</a>
+            {% else %}
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('shop.partner_register') }}" class="btn btn-dark btn-sm">Become Partner</a>
+                <a href="{{ url_for('shop.partner_login') }}" class="btn btn-outline-dark btn-sm">Login</a>
+              </div>
+            {% endif %}
+          </li>
+
+        </ul>
+      </nav>
+
+      <!-- Mobile Right -->
+      <div class="d-lg-none d-flex align-items-center gap-3">
+        <a href="{{ url_for('shop.view_cart') }}" class="position-relative">
+          <i class="bi bi-cart3"></i>
+          {% set cart_quantity = session.get('cart', []) | sum(attribute='quantity') %}
+          <span style="margin-top: 7px;margin-right: -5px;width: 100%;" id="cart-badge"
+                class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle">
+            {{ cart_quantity }}
+          </span>
+        </a>
+        <button class="hamburger border-0 bg-transparent fs-3 text-dark" id="hamburgerBtn">
+          <i class="bi bi-list"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile Overlay Menu -->
+  <div id="mobileMenu" class="mobile-overlay">
+    <button class="close-btn border-0 bg-transparent fs-2" id="closeMenu">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="overlay-content">
+      <a href="{{ url_for('shop.home') }}" class="d-block py-2">Home</a>
+      <a href="#" class="d-block py-2">Shop</a>
+      {% if session.get('is_partner') %}
+        <a href="{{url_for('shop.partner_login')}}" class="d-block py-2">Login</a>
+      {% elif session.get('logged_in') %}
+        <a href="{{url_for('shop.partner_register')}}" class="d-block py-2">Become Partner</a>
+      {% else %}
+        <a href="{{url_for('shop.partner_register')}}" class="d-block py-2">Become Partner</a>
+        <a href="{{url_for('shop.partner_login')}}" class="d-block py-2">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<main class="container-fluid my-4">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class="footer py-5 mt-5">
+  <div class="container text-center text-md-start">
+    <div class="row justify-content-center">
+
+      <!-- About Section -->
+      <div class="col-md-4 mb-4">
+        <h5 class="fw-bold text-white">Friday Edition</h5>
+        <p class="small text-light">
+          Your one-stop shop for the best products. Fast, reliable, and smooth shopping experience.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold text-white">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light text-decoration-none">Home</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Shop</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Cart</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="col-md-3 mb-4">
+        <h6 class="fw-bold text-white">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light text-decoration-none">FAQ</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Shipping Info</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Returns</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter / Social -->
+      <div class="col-md-2 mb-4">
+        <h6 class="fw-bold text-white">Newsletter</h6>
+        <form class="d-flex mb-3 flex-column flex-sm-row gap-2 justify-content-center">
+          <input type="email" class="form-control form-control-sm email-input" placeholder="Your email">
+          <button class="btn btn-warning btn-sm foot-btn">Subscribe</button>
+        </form>
+        <div class="mt-2 d-flex justify-content-center gap-2">
+          <a href="#" class="text-light"><i class="bi bi-facebook fs-5"></i></a>
+          <a href="#" class="text-light"><i class="bi bi-twitter fs-5"></i></a>
+          <a href="#" class="text-light"><i class="bi bi-instagram fs-5"></i></a>
+          <a href="#" class="text-light"><i class="bi bi-linkedin fs-5"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="row mt-4">
+      <div class="col text-center text-light small">
+        &copy; 2025 Friday Edition. All rights reserved.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const closeMenu = document.getElementById('closeMenu');
+  hamburger?.addEventListener('click', () => mobileMenu.classList.add('open'));
+  closeMenu?.addEventListener('click', () => mobileMenu.classList.remove('open'));
+
+  // Dropdowns
+  const productLink = document.getElementById('productDropdown');
+  const productMenu = document.getElementById('productMenu');
+  const shopLink = document.getElementById('shopDropdown');
+  const shopMenu = document.getElementById('shopMenu');
+  const closeProduct = document.getElementById('closeProduct');
+  const closeShop = document.getElementById('closeShop');
+
+  productLink.addEventListener('click', e => {
+    e.preventDefault();
+    productMenu.classList.toggle('show');
+    shopMenu.classList.remove('show');
+  });
+  shopLink.addEventListener('click', e => {
+    e.preventDefault();
+    shopMenu.classList.toggle('show');
+    productMenu.classList.remove('show');
+  });
+  closeProduct?.addEventListener('click', () => productMenu.classList.remove('show'));
+  closeShop?.addEventListener('click', () => shopMenu.classList.remove('show'));
+  document.addEventListener('click', e => {
+    if (!productLink.contains(e.target) && !productMenu.contains(e.target)) productMenu.classList.remove('show');
+    if (!shopLink.contains(e.target) && !shopMenu.contains(e.target)) shopMenu.classList.remove('show');
+  });
+
+  // Toast messages
+  const toastContainer = document.getElementById('toastContainer');
+  const flashes = {{ get_flashed_messages(with_categories=true) | tojson }};
+  flashes.forEach(([category, message]) => {
+    const existingToasts = toastContainer.querySelectorAll('.toast');
+    if (existingToasts.length >= 2) existingToasts[0].remove();
+    let bgClass = 'bg-primary text-white';
+    if (category === 'success') bgClass = 'bg-success text-white';
+    else if (category === 'danger') bgClass = 'bg-danger text-white';
+    else if (category === 'warning') bgClass = 'bg-warning text-dark';
+    else if (category === 'info') bgClass = 'bg-info text-dark';
+    const toastEl = document.createElement('div');
+    toastEl.className = `toast align-items-center ${bgClass} border-0 mb-2 slide-in`;
+    toastEl.setAttribute('role','alert');
+    toastEl.setAttribute('aria-live','assertive');
+    toastEl.setAttribute('aria-atomic','true');
+    toastEl.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>`;
+    toastContainer.appendChild(toastEl);
+    const toast = new bootstrap.Toast(toastEl, { delay: 2000, autohide: true });
+    toast.show();
+  });
+
+  // === Live Search Suggestions ===
+  const searchInput = document.getElementById('searchInput');
+  const suggestionsBox = document.getElementById('search-suggestions');
+  const searchForm = document.getElementById('searchForm');
+  let debounceTimer;
+
+  searchInput?.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+    clearTimeout(debounceTimer);
+
+    if (!query) {
+      suggestionsBox.classList.remove('show');
+      suggestionsBox.innerHTML = '';
+      return;
+    }
+
+    debounceTimer = setTimeout(() => {
+      fetch(`/search-suggestions?query=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.length) {
+            suggestionsBox.classList.remove('show');
+            suggestionsBox.innerHTML = '';
+            return;
+          }
+          suggestionsBox.innerHTML = data.map(item => `
+          <button type="button" class="dropdown-item text-start"
+                  onclick="window.location.href='/search?q=${encodeURIComponent(item.name)}'">
+            ${item.name}
+          </button>`).join('');
+
+          suggestionsBox.classList.add('show');
+        });
+    }, 250);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchForm.contains(e.target)) {
+      suggestionsBox.classList.remove('show');
+    }
+  });
+});
+</script>
+</body>
+</html>

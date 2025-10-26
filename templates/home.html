@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section w-100 m-0 p-0">
+
+  <!-- Mobile Search (only visible on mobile) -->
+  <div style="margin-top: -5%;" class="mobile-search d-block d-lg-none p-3 position-relative">
+    <form class="d-flex position-relative">
+      <input class="form-control" type="search" placeholder="Search products" name="search">
+      <span class="search-icon"><i class="bi bi-search"></i></span>
+    </form>
+  </div>
+
+  <!-- Mobile Dropdown Links (centered) -->
+  <div class="d-lg-none text-center mt-2 mb-3">
+    <div class="d-inline-flex gap-3">
+      
+      <!-- Product Categories Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-outline-dark dropdown-toggle" type="button" id="mobileProductDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          Products
+        </button>
+        <ul class="dropdown-menu text-center" aria-labelledby="mobileProductDropdown">
+          {% set categories = ['electronics', 'dress', 'mobile', 'sports', 'beauty', 'toys'] %}
+          {% for category in categories %}
+            <a class="dropdown-item" href="{{ url_for('shop.category_page', category_name=category) }}">
+              {{ category.title() if category != 'dress' else 'Fashion' }}
+            </a>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Shops Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-outline-dark dropdown-toggle" type="button" id="mobileShopDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          Shop
+        </button>
+        <ul class="dropdown-menu text-center" aria-labelledby="mobileShopDropdown">
+          {% for s in all_shops %}
+          <li>
+            <a class="dropdown-item" href="{{ url_for('shop.shop_page', shop_name=s) }}">
+              {{ s }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-0">
+
+    <!-- Hero left carousel & overlay -->
+    <div class="col-lg-8 hero-left position-relative">
+      <div id="heroCarousel" class="carousel slide h-100" data-bs-ride="carousel">
+        <div class="carousel-inner h-100">
+          {% for slide in hero_slides %}
+          <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %} h-100">
+              <img src="{{ url_for('static', filename='images/' + slide.image) }}" class="d-block w-100 h-100" alt="{{ slide.name }}">
+          </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+
+      <div class="hero-overlay text-center text-white d-none d-lg-block">
+        <h1 class="hero-title fw-bold">Big Seasonal Sale</h1>
+        <p class="hero-subtext">Grab the best deals before they’re gone!</p>
+        <div class="hero-buttons mt-3">
+          <a href="#" class="btn btn-primary me-2">Shop Now</a>
+          <a href="#" class="btn btn-outline-light">Explore Categories</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero right product cards (desktop only) -->
+    <div class="col-lg-4 hero-right d-none d-lg-block bg-light p-3">
+      <div class="row g-3">
+        {% for product in hero_products %}
+        <div class="col-6">
+          <div class="card product-card text-center">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title flex-grow-1">{{ product.name }}</h5>
+              <p class="card-text mb-2">${{ product.price }}</p>
+              <p class="card-text mb-2">From : {{ product.store }}</p>
+              <a href="{{ url_for('shop.product_page', product_id=product.id) }}" class="btn btn-primary mt-auto">Shop Now</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mobile: Cards Horizontal Scroll -->
+  <div class="d-lg-none mt-3 px-3">
+    <div class="product-scroll d-flex gap-3 overflow-auto flex-nowrap">
+      {% for product in hero_products %}
+      <div class="card product-card text-center flex-shrink-0" style="width: 45%;">
+        <img src="{{ url_for('static', filename='images/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title flex-grow-1">{{ product.name }}</h5>
+          <p class="card-text mb-2">${{ product.price }}</p>
+          <p class="card-text mb-2">From : {{ product.store }}</p>
+          <a href="{{ url_for('shop.product_page', product_id=product.id) }}" class="btn btn-primary mt-auto">Shop Now</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== All Products Section ===== -->
+<section class="all-products-section py-5">
+  <div class="container">
+    <div class="section-header text-center mb-4">
+      <h2 class="fw-bold">Shop Our Collection</h2>
+      <p class="text-muted small">Explore our wide range of products</p>
+    </div>
+
+    <div class="row g-3">
+      {% for product in all_products %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card product-card text-center h-100">
+          <img src="{{ url_for('static', filename='images/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title flex-grow-1">{{ product.name }}</h5>
+            <p class="card-text mb-2">${{ product.price }}</p>
+            <p class="card-text mb-2">From : {{ product.store }}</p>
+            <a href="{{ url_for('shop.product_page', product_id=product.id) }}" class="btn btn-warning mt-auto">Shop Now</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
